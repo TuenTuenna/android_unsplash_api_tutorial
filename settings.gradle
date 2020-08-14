@@ -1,0 +1,2 @@
+rootProject.name='UnSplash_App_tutorial'
+include ':app'
