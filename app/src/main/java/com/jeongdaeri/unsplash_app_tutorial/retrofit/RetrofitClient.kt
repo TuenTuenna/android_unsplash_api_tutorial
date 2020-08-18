@@ -1,10 +1,15 @@
 package com.jeongdaeri.unsplash_app_tutorial.retrofit
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
+import com.jeongdaeri.unsplash_app_tutorial.App
 import com.jeongdaeri.unsplash_app_tutorial.utils.API
 import com.jeongdaeri.unsplash_app_tutorial.utils.Constants.TAG
 import com.jeongdaeri.unsplash_app_tutorial.utils.isJsonArray
 import com.jeongdaeri.unsplash_app_tutorial.utils.isJsonObject
+import okhttp3.Handshake
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -78,7 +83,19 @@ object RetrofitClient {
                                                 .method(originalRequest.method, originalRequest.body)
                                                 .build()
 
-                return chain.proceed(finalRequest)
+
+                val response = chain.proceed(finalRequest)
+
+                if(response.code != 200) {
+
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(App.instance, "${response.code} 에러 입니다.", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+
+                return response
+
             }
 
         })
