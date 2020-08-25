@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="사진검색"
-            app:menu="@menu/top_app_bar"
+            app:menu="@menu/top_app_bar_menu"
             app:navigationIcon="@drawable/ic_baseline_menu_24"
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
             app:layout_scrollFlags="scroll|enterAlways|snap"
@@ -33,5 +33,56 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         />
 
+<!-- 검색 히스토리 뷰 -->
+    <LinearLayout
+        android:id="@+id/linear_search_history_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        android:background="#fff"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            >
+            <TextView
+                android:id="@+id/search_history_mode_switch_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="검색어 저장"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/search_history_mode_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/search_history_mode_switch_label"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="3dp"
+                android:theme="@style/MySwitchButton"
+                android:checked="false"
+                />
+            <Button
+                android:id="@+id/clear_search_history_buttton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="전체삭제"
+                android:drawableEnd="@drawable/ic_baseline_delete_outline_24"
+                android:textColor="@color/colorGray"
+                android:background="?attr/selectableItemBackground"
+
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

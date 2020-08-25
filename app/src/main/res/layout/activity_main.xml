@@ -35,8 +35,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="사진검색"
+                android:textSize="14sp"
                 android:checked="true"
                 android:layout_marginEnd="20dp"
+                android:theme="@style/MyRadioButton"
                 />
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/user_search_radio_btn"
@@ -44,6 +46,8 @@
                 android:layout_height="wrap_content"
                 android:text="사용자검색"
                 android:checked="false"
+                android:textSize="14sp"
+                android:theme="@style/MyRadioButton"
                 />
         </RadioGroup>
 

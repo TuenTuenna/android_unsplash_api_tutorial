@@ -16,5 +16,17 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyRadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="colorControlNormal">@color/colorLightGray</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@color/colorLightPink</item>
+    </style>
+
+    <style name="MySwitchButton" parent="">
+        <item name="colorSwitchThumbNormal">@color/colorLightGray</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="android:colorForeground">@color/colorLightGray</item>
+
+    </style>
 
 </resources>
