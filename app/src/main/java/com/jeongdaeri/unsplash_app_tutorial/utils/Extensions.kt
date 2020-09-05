@@ -29,7 +29,7 @@ fun String?.isJsonArray() : Boolean {
 
 
 // 날짜 포맷
-fun Date.toString() : String {
+fun Date.toSimpleString() : String {
     val format = SimpleDateFormat("HH:mm:ss")
     return format.format(this)
 }
