@@ -14,7 +14,7 @@
         android:theme="@style/MaterialTheme">
 
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PhotoCollectionActivity"/>
+        <activity android:name=".activities.PhotoCollectionActivity"/>
 
     </application>
 
