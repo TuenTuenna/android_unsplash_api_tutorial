@@ -1,12 +1,12 @@
-package com.jeongdaeri.unsplash_app_tutorial
+package com.jeongdaeri.unsplash_app_tutorial.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.jeongdaeri.unsplash_app_tutorial.R
 import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 import com.jeongdaeri.unsplash_app_tutorial.utils.Constants.TAG
 import com.jeongdaeri.unsplash_app_tutorial.utils.RESPONSE_STATUS
@@ -37,14 +37,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.photo_search_radio_btn -> {
                     Log.d(TAG, "사진검색 버튼 클릭!")
                     search_term_text_layout.hint = "사진검색"
-                    search_term_text_layout.startIconDrawable = resources.getDrawable(R.drawable.ic_photo_library_black_24dp, resources.newTheme())
+                    search_term_text_layout.startIconDrawable = resources.getDrawable(
+                        R.drawable.ic_photo_library_black_24dp, resources.newTheme())
                     this.currentSearchType = SEARCH_TYPE.PHOTO
                 }
 
                 R.id.user_search_radio_btn -> {
                     Log.d(TAG, "사용자검색 버튼 클릭!")
                     search_term_text_layout.hint = "사용자검색"
-                    search_term_text_layout.startIconDrawable = resources.getDrawable(R.drawable.ic_person_black_24dp, resources.newTheme())
+                    search_term_text_layout.startIconDrawable = resources.getDrawable(
+                        R.drawable.ic_person_black_24dp, resources.newTheme())
                     this.currentSearchType = SEARCH_TYPE.USER
                 }
             }
