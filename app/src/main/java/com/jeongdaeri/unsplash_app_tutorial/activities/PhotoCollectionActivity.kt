@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jakewharton.rxbinding4.widget.textChanges
 import com.jeongdaeri.unsplash_app_tutorial.R
 import com.jeongdaeri.unsplash_app_tutorial.model.Photo
 import com.jeongdaeri.unsplash_app_tutorial.model.SearchData
@@ -27,8 +28,14 @@ import com.jeongdaeri.unsplash_app_tutorial.utils.Constants.TAG
 import com.jeongdaeri.unsplash_app_tutorial.utils.RESPONSE_STATUS
 import com.jeongdaeri.unsplash_app_tutorial.utils.SharedPrefManager
 import com.jeongdaeri.unsplash_app_tutorial.utils.toSimpleString
+import io.reactivex.rxjava3.annotations.SchedulerSupport
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_photo_collection.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class PhotoCollectionActivity: AppCompatActivity(),
@@ -57,6 +64,8 @@ class PhotoCollectionActivity: AppCompatActivity(),
     // 서치뷰 에딧 텍스트
     private lateinit var mySearchViewEditText: EditText
 
+    // 옵저버블 통합 제거를 위한 CompositeDisposable
+    private var myCompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,7 +117,14 @@ class PhotoCollectionActivity: AppCompatActivity(),
         }
 
 
-    } //
+    } // onCreate
+
+    override fun onDestroy() {
+        // 모두 삭제
+        this.myCompositeDisposable.clear()
+        super.onDestroy()
+    }
+
 
     // 검색 기록 리사이클러뷰 준비
     private fun searchHistoryRecyclerViewSetting(searchHistoryList: ArrayList<SearchData>){
@@ -166,7 +182,7 @@ class PhotoCollectionActivity: AppCompatActivity(),
                 when(hasExpaned) {
                     true -> {
                         Log.d(TAG, "서치뷰 열림")
-                        linear_search_history_view.visibility = View.VISIBLE
+//                        linear_search_history_view.visibility = View.VISIBLE
 
                         handleSearchViewUi()
                     }
@@ -179,6 +195,37 @@ class PhotoCollectionActivity: AppCompatActivity(),
 
             // 서치뷰에서 에딧텍스트를 가져온다.
             mySearchViewEditText = this.findViewById(androidx.appcompat.R.id.search_src_text)
+
+            // 에딧텍스트 옵저버블
+            val editTextChangeObservable = mySearchViewEditText.textChanges()
+
+            val searchEditTextSubscription : Disposable =
+                // 옵저버블에 오퍼레이터들 추가
+                editTextChangeObservable
+                    // 글자가 입력 되고 나서 0.8 초 후에 onNext 이벤트로 데이터 흘려보내기
+                    .debounce(1000, TimeUnit.MILLISECONDS)
+                    // IO 쓰레드에서 돌리겠다.
+                    // Scheduler instance intended for IO-bound work.
+                    // 네트워크 요청, 파일 읽기,쓰기, 디비처리 등
+                    .subscribeOn(Schedulers.io())
+                    // 구독을 통해 이벤트 응답 받기
+                    .subscribeBy(
+                        onNext = {
+                            Log.d("RX", "onNext : $it")
+                            //TODO:: 흘러들어온 이벤트 데이터로 api 호출
+                            if (it.isNotEmpty()){
+                                searchPhotoApiCall(it.toString())
+                            }
+                        },
+                        onComplete = {
+                            Log.d("RX", "onComplete")
+                        },
+                        onError = {
+                            Log.d("RX", "onError : $it")
+                        }
+                    )
+            // compositeDisposable 에 추가
+            myCompositeDisposable.add(searchEditTextSubscription)
         }
 
 
@@ -229,6 +276,10 @@ class PhotoCollectionActivity: AppCompatActivity(),
         if(userInputText.count() == 12){
             Toast.makeText(this, "검색어는 12자 까지만 입력 가능합니다.", Toast.LENGTH_SHORT).show()
         }
+
+//        if(userInputText.length in 1..12){
+//            searchPhotoApiCall(userInputText)
+//        }
 
         return true
     }
