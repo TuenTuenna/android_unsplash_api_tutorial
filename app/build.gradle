@@ -58,9 +58,19 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
+    // Rx
+    // rx 자바 - 메인
 
+    implementation "io.reactivex.rxjava3:rxjava:3.0.6"
+    // rx 코틀린 - 추가
+    implementation "io.reactivex.rxjava3:rxkotlin:3.0.0"
 
+    // rx 안드로이드 - 스레드 - 스케쥴러
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
 
+    // edittext 등의 안드로이드 뷰 컴포넌트들과 연결
+    // rx 바인딩
+    implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
 
 
 
