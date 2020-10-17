@@ -2,6 +2,7 @@ package com.jeongdaeri.unsplash_app_tutorial.activities
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
@@ -27,6 +28,7 @@ import com.jeongdaeri.unsplash_app_tutorial.retrofit.RetrofitManager
 import com.jeongdaeri.unsplash_app_tutorial.utils.Constants.TAG
 import com.jeongdaeri.unsplash_app_tutorial.utils.RESPONSE_STATUS
 import com.jeongdaeri.unsplash_app_tutorial.utils.SharedPrefManager
+import com.jeongdaeri.unsplash_app_tutorial.utils.textChangesToFlow
 import com.jeongdaeri.unsplash_app_tutorial.utils.toSimpleString
 import io.reactivex.rxjava3.annotations.SchedulerSupport
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -34,9 +36,15 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_photo_collection.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
+import kotlin.coroutines.CoroutineContext
 
 class PhotoCollectionActivity: AppCompatActivity(),
                                 SearchView.OnQueryTextListener,
@@ -64,8 +72,15 @@ class PhotoCollectionActivity: AppCompatActivity(),
     // 서치뷰 에딧 텍스트
     private lateinit var mySearchViewEditText: EditText
 
+    /* rx 적용부분
     // 옵저버블 통합 제거를 위한 CompositeDisposable
     private var myCompositeDisposable = CompositeDisposable()
+     */
+
+    private var myCoroutineJob : Job = Job()
+    private val myCoroutineContext: CoroutineContext
+        get() = Dispatchers.IO + myCoroutineJob
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +91,8 @@ class PhotoCollectionActivity: AppCompatActivity(),
         val searchTerm = intent.getStringExtra("search_term")
 
         Log.d(TAG, "PhotoCollectionActivity - onCreate() called / searchTerm : $searchTerm, photoList.count() : ${photoList.count()}")
+
+
 
 
 
@@ -120,8 +137,13 @@ class PhotoCollectionActivity: AppCompatActivity(),
     } // onCreate
 
     override fun onDestroy() {
+        Log.d(TAG, "PhotoCollectionActivity - onDestroy() called")
+        /* rx 적용 부분
         // 모두 삭제
         this.myCompositeDisposable.clear()
+         */
+        myCoroutineContext.cancel()
+
         super.onDestroy()
     }
 
@@ -196,6 +218,7 @@ class PhotoCollectionActivity: AppCompatActivity(),
             // 서치뷰에서 에딧텍스트를 가져온다.
             mySearchViewEditText = this.findViewById(androidx.appcompat.R.id.search_src_text)
 
+            /* Rx 적용 부
             // 에딧텍스트 옵저버블
             val editTextChangeObservable = mySearchViewEditText.textChanges()
 
@@ -226,7 +249,31 @@ class PhotoCollectionActivity: AppCompatActivity(),
                     )
             // compositeDisposable 에 추가
             myCompositeDisposable.add(searchEditTextSubscription)
+      */
+
+            // Rx의 스케줄러와 비슷
+            // IO 스레드에서 돌리겠다
+            GlobalScope.launch(context = myCoroutineContext){
+
+                // editText 가 변경되었을때
+                val editTextFlow = mySearchViewEditText.textChangesToFlow()
+
+                editTextFlow
+                    // 연산자들
+                    // 입려되고 나서 2초 뒤에 받는다
+                    .debounce(2000)
+                    .filter {
+                        it?.length!! > 0
+                    }
+                    .onEach {
+                    Log.d(TAG, "flow로 받는다 $it")
+                    }
+                    .launchIn(this)
+            }
+
+
         }
+
 
 
         this.mySearchViewEditText.apply {
