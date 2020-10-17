@@ -184,6 +184,7 @@ class PhotoCollectionActivity: AppCompatActivity(),
 
     }
 
+    @FlowPreview
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         Log.d(TAG, "PhotoCollectionActivity - onCreateOptionsMenu() called")
 
@@ -266,7 +267,9 @@ class PhotoCollectionActivity: AppCompatActivity(),
                         it?.length!! > 0
                     }
                     .onEach {
-                    Log.d(TAG, "flow로 받는다 $it")
+                        Log.d(TAG, "flow로 받는다 $it")
+                        // 해당 검색어로 api 호출
+                        searchPhotoApiCall(it.toString())
                     }
                     .launchIn(this)
             }
